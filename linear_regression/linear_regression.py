@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 from sklearn.datasets import fetch_california_housing
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
 
 # 加载数据集
 housing = fetch_california_housing()
