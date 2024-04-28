@@ -8,6 +8,8 @@ from sklearn.model_selection import train_test_split
 housing = fetch_california_housing()
 x = housing.data
 y = housing.target
+print("特征数组 x 的形状:", x.shape)
+print("目标数组 y 的形状:", y.shape)
 
 # 划分训练集和测试集
 X_train, X_test, Y_train, Y_test = train_test_split(x, y, test_size=0.2, random_state=42)
