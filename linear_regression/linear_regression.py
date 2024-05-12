@@ -4,6 +4,7 @@ from sklearn.datasets import fetch_california_housing
 from sklearn.preprocessing import StandardScaler
 
 
+# 定义一个自定义的训练集和测试集分割函数
 def my_train_test_split(x, y, test_size=0.2, random_state=None):
     """
     实现数据集的分割功能，将给定的输入数据集划分为训练集和测试集两部分。
@@ -46,6 +47,7 @@ def my_train_test_split(x, y, test_size=0.2, random_state=None):
     return x_train, x_test, y_train, y_test
 
 
+# 定义一个简单的线性回归类
 class my_linear_regression:
     """
     定义一个简单的多元线性回归模型类，用于拟合给定数据集并进行预测。
@@ -131,11 +133,12 @@ class my_linear_regression:
         x (np.ndarray): 输入数据，形状为(n_samples, n_features)，与训练时使用的特征矩阵形状相同。
 
         返回:
-        np.ndarray: 预测结果数组，形状为(n_samples,),表示对输入数据中每个样本的预测值。
+        np.ndarray: 预测结果数组，形状为(n_samples,), 表示对输入数据中每个样本的预测值。
         """
         return np.dot(x, self.weights) + self.bias
 
 
+# 定义均方误差函数
 def my_mean_squared_error(y_true, y_pred):
     """
     计算均方误差（MSE），作为评估模型预测性能的一种指标。
@@ -143,8 +146,8 @@ def my_mean_squared_error(y_true, y_pred):
     均方误差是预测值与真实值之差的平方的平均值，越小表示模型预测效果越好。
 
     参数:
-    y_true (np.ndarray): 真实值数组，形状为(n_samples,),表示实际观测到的目标变量值。
-    y_pred (np.ndarray): 预测值数组，形状为(n_samples,),表示模型对每个样本的预测值。
+    y_true (np.ndarray): 真实值数组，形状为(n_samples,), 表示实际观测到的目标变量值。
+    y_pred (np.ndarray): 预测值数组，形状为(n_samples,), 表示模型对每个样本的预测值。
 
     返回:
     float: 均方误差（MSE）值。
@@ -154,6 +157,7 @@ def my_mean_squared_error(y_true, y_pred):
     return mse
 
 
+# 定义R²得分函数
 def my_r2_score(y_true, y_pred):
     """
     计算R²得分（决定系数），作为评估模型预测性能的另一种指标。
@@ -161,18 +165,21 @@ def my_r2_score(y_true, y_pred):
     R²得分表示模型预测值与真实值之间关系的强度，取值范围为[0, 1]，越接近1表示模型拟合程度越高。
 
     参数:
-    y_true (np.ndarray): 真实值数组，形状为(n_samples,),表示实际观测到的目标变量值。
-    y_pred (np.ndarray): 预测值数组，形状为(n_samples,),表示模型对每个样本的预测值。
+    y_true (np.ndarray): 真实值数组，形状为(n_samples,), 表示实际观测到的目标变量值。
+    y_pred (np.ndarray): 预测值数组，形状为(n_samples,), 表示模型对每个样本的预测值。
 
     返回:
     float: R²得分值。
     """
+    # 计算真实值的平均值
     mean_y_true = np.mean(y_true)
+    # 计算总平方和，即真实值与真实值平均值之差的平方和
     total_sum_of_squares = np.sum((y_true - mean_y_true) ** 2)
+    # 计算残差平方和，即预测值与真实值之差的平方和
     residual_sum_of_squares = np.sum((y_true - y_pred) ** 2)
+    # 计算R²得分
     r2 = 1 - (residual_sum_of_squares / total_sum_of_squares)
     return r2
-
 
 # 加载加利福尼亚州房屋数据集
 housing = fetch_california_housing()
@@ -184,34 +191,32 @@ y = housing.target
 # 打印特征数组 x 和目标数组 y 的形状，以便了解数据集的基本结构
 print("特征数组 x 的形状:", x.shape)
 print("目标数组 y 的形状:", y.shape)
+
 # 数据标准化
 scaler = StandardScaler()
 x_scaled = scaler.fit_transform(x)
+
 # 划分数据集为训练集和测试集
-# 使用 my_train_test_split 函数，将特征数组 x 和目标数组 y 按照 80% 训练集、20% 测试集的比例进行分割
-# 并指定随机种子为 42，确保每次运行代码时，数据集划分结果保持一致
+# 使用自定义的 my_train_test_split 函数，按照 80% 训练集和 20% 测试集的比例进行分割
+# 并指定随机种子为 42，以确保结果的可复现性
 x_train, x_test, y_train, y_test = my_train_test_split(x, y, test_size=0.2, random_state=42)
 
 # 创建线性回归模型实例
-# 使用 my_linear_regression 类，创建一个线性回归模型对象，使用默认的学习率和迭代次数
+# 使用自定义的 my_linear_regression 类创建线性回归模型对象，采用默认的学习率和迭代次数
 model = my_linear_regression(learning_rate=0.01, n_iterations=500)
 
 # 训练线性回归模型
-# 调用模型实例的 fit 方法，使用训练集特征 x_train 和目标 y_train 进行模型训练
 model.fit(x_train, y_train)
 
-# 使用模型对测试集进行预测
-# 调用模型实例的 predict 方法，使用测试集特征 x_test 进行预测，得到预测值数组 y_pred
+# 使用训练好的模型对测试集进行预测
 y_pred = model.predict(x_test)
 
-# 计算模型的均方误差（MSE）和 R² 得分
-# 使用 my_mean_squared_error 函数计算模型在测试集上的均方误差
-# 使用 my_r2_score 函数计算模型在测试集上的 R² 得分，评估模型的拟合优度
+# 计算模型在测试集上的均方误差（MSE）和 R² 得分
+# 分别使用自定义的 my_mean_squared_error 和 my_r2_score 函数进行计算
 mse = my_mean_squared_error(y_test, y_pred)
 r2 = my_r2_score(y_test, y_pred)
 
-# 打印模型的均方误差和 R² 得分
-# 将计算得到的均方误差和 R² 得分格式化输出，便于观察和对比模型性能
+# 打印模型的均方误差和 R² 得分，以评估模型性能
 print(f"模型均方误差 (MSE): {mse:.2f}")
 print(f"模型 R² 得分: {r2:.2f}")
 
@@ -219,13 +224,13 @@ print(f"模型 R² 得分: {r2:.2f}")
 # 使用 matplotlib 库绘制散点图，展示测试集上真实值 y_test 与预测值 y_pred 之间的关系
 plt.figure(figsize=(10, 6))
 
-# 绘制散点图，蓝色散点表示真实值与预测值的对应关系，透明度设置为 0.5
+# 绘制散点图，蓝色散点表示真实值与预测值的对应关系，设置透明度为 0.5
 plt.scatter(y_test, y_pred, alpha=0.5)
 
-# 绘制红色虚线作为理想拟合线，即 y = x，表示完美预测情况
+# 绘制红色虚线作为理想拟合线，即 y = x，表示完美预测的情况
 plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], color='red', linestyle='--')
 
-# 设置图表标题、x轴标签、y轴标签
+# 设置图表的标题、x 轴和 y 轴的标签
 plt.title('my linear regression')
 plt.xlabel('True Values')
 plt.ylabel('Predictions')
