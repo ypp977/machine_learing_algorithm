@@ -62,3 +62,29 @@ weights = torch.randn(784, 10, requires_grad=True) # 随机初始化权重
 bias = torch.zeros(10, requires_grad=True)
 
 print(f"loss_func(model(xb),yb):{loss_func(model(xb), yb)}")
+
+
+from torch import nn  # 导入torch的神经网络模块
+
+class Mnist_nn(nn.Module):  # 定义一个继承自nn.Module的类
+    def __init__(self):
+        super().__init__()  # 显式调用父类初始化
+        # 定义网络层
+        self.hidden1 = nn.Linear(784, 128)  # 输入层到第一个隐藏层
+        self.hidden2 = nn.Linear(128, 256)  # 第一个隐藏层到第二个隐藏层
+        self.out = nn.Linear(256, 10)  # 第二个隐藏层到输出层
+        self.dropout = nn.Dropout(0.5)  # dropout层，丢弃50%的神经元
+
+    def forward(self, x):
+        x = F.relu(self.hidden1(x))  # 对第一层隐藏层应用ReLU激活函数
+        x = self.dropout(x)  # 对第一层输出应用dropout
+        x = F.relu(self.hidden2(x))  # 对第二层隐藏层应用ReLU激活函数
+        x = self.dropout(x)  # 对第二层输出应用dropout
+        x = self.out(x)  # 最后应用输出层
+        return x  # 返回网络的最终输出
+
+net = Mnist_nn()  # 实例化神经网络
+print(net)  # 打印网络结构
+
+for name, param in net.named_parameters():
+    print(f"Layer: {name} | Size: {param.size()} | Values: {param[:2]} \n")
