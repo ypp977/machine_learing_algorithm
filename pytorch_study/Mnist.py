@@ -88,3 +88,48 @@ print(net)  # 打印网络结构
 
 for name, param in net.named_parameters():
     print(f"Layer: {name} | Size: {param.size()} | Values: {param[:2]} \n")
+    
+from torch.utils.data import TensorDataset
+from torch.utils.data import DataLoader
+
+train_ds = TensorDataset(x_train, y_train)
+train_dl = DataLoader(train_ds, batch_size=bs, shuffle=True)
+
+valid_ds = TensorDataset(x_valid, y_valid)
+valid_dl = DataLoader(valid_ds, batch_size=bs * 2)
+
+def getdata(train_ds, valid_ds, bs):
+    return (
+        DataLoader(train_ds, batch_size=bs, shuffle=True),
+        DataLoader(valid_ds, batch_size=bs * 2)
+    )
+    
+import numpy as np
+def fit(steps,model,loss_func,opt,train_dl,valid_dl):
+    for step in range(steps):
+        model.train()
+        for xb,yb in train_dl:
+            loss_batch(model,loss_func,xb,yb,opt)
+        
+        model.eval()
+        with torch.no_grad():
+            losses,nums = zip(
+                *[loss_batch(model,loss_func,xb,yb) for xb,yb in valid_dl]
+            )
+        val_loss = np.sum(np.multiply(losses,nums)) / np.sum(nums)
+        print(f"Step: {step}, Validation loss: {val_loss}")
+        
+from torch import optim
+def get_model():
+     model = Mnist_nn()
+     return model,optim.SGD(model.parameters(), lr=0.001)
+
+def loss_batch(model,loss_func,xb,yb,opt=None):
+    loss = loss_func(model(xb),yb)
+    
+    if opt is not None:
+        loss.backward()
+        opt.step()
+        opt.zero_grad()
+    
+    return loss.item(),len(xb)
